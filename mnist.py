@@ -5,8 +5,8 @@ import requests
 import matplotlib.pyplot as plt
 
 import dll
+from dll.layers import Linear, Flatten
 from dll import ReLU, CrossEntropyLoss
-from dll.layers import Linear
 from dll.optimizers import SGD
 
 
@@ -40,40 +40,18 @@ def main():
     y_test = y_test[8:]
 
     model = dll.Model([
+        Flatten((28, 28), 28 * 28),
         Linear(28 * 28, 128, ReLU),
         Linear(128, 10, None)
     ])
     model.print_summary()
-    optimizer = SGD(model, learning_rate=0.01)
 
-    batch_size = 128
-
-    plt.ion()
-
-    losses = []
-    for epoch in range(0):
-        sample = np.random.randint(0, x_train.shape[0], size=batch_size)
-        x = x_train[sample].reshape((-1, 28 * 28))
-        y = y_train[sample]
-
-        y_pred = model(x)
-        loss, grad = CrossEntropyLoss.compute_cost(y_pred, y)
-        optimizer.step(grad)
-        losses.append(loss)
-
-        if epoch % 1000 == 0:
-            print(f"{epoch = :>4}: {loss = :>8.3f}")
-            plt.plot(losses)
-            plt.draw()
-            plt.pause(0.0001)
-            plt.clf()
-
-    y_preds_test = model(x_test.reshape((-1, 28 * 28)))
-    y_preds_test = np.argmax(y_preds_test, axis=1)
-    test_accuracy = np.mean(y_preds_test == y_test)
+    model.compile(CrossEntropyLoss, SGD, learning_rate=0.01)
+    model.train(x_train, y_train, batch_size=128, epochs=50, validation_split=0.1)
 
     print()
-    print(f"Accuracy: {test_accuracy}")
+    print(f"Accuracy: {model.test(x_test, y_test): .3%}")
+
 
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ import numpy as np
 
 class Linear(BaseLayer):
     def __init__(self, input_units: int, output_units: int, activation: Optional[Type[_Activation]] = None):
+        super().__init__()
         self.input_units: int = input_units
         self.output_units: int = output_units
         self.activation: Type[_Activation] = activation

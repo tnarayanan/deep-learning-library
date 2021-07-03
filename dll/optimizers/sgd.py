@@ -12,5 +12,6 @@ class SGD(BaseOptimizer):
         da_prev = grad
         for layer in reversed(self.model.layers):
             da_prev, dw, db = layer.backward(da_prev)
-            layer.weights = layer.weights - self.learning_rate * dw
-            layer.bias = layer.bias - self.learning_rate * db
+            if layer.optimize:
+                layer.weights = layer.weights - self.learning_rate * dw
+                layer.bias = layer.bias - self.learning_rate * db

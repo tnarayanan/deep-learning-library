@@ -4,6 +4,9 @@ import numpy as np
 
 
 class BaseLayer(ABC):
+    def __init__(self, optimize: Optional[bool] = True):
+        self.optimize = optimize
+
     def get_name(self) -> str:
         return self.__class__.__name__
 
