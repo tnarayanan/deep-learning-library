@@ -16,9 +16,9 @@ import dll.optimizers as optimizers
 x_train, y_train, x_test, y_test = get_mnist_data()
 
 model = dll.Model([
-        Flatten((28, 28), 28 * 28),
+        Flatten((28, 28)),
         Linear(28 * 28, 128, dll.ReLU),
-        Linear(128, 10, None)
+        Linear(128, 10)
 ])
 model.print_summary()
 

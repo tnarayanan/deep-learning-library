@@ -5,10 +5,10 @@ import numpy as np
 
 
 class Flatten(BaseLayer):
-    def __init__(self, input_shape: tuple, output_units: int):
+    def __init__(self, input_shape: tuple):
         super().__init__(optimize=False)
         self.input_shape: tuple = input_shape
-        self.output_units: int = output_units
+        self.output_units: int = np.prod(input_shape)
 
     def get_num_params(self) -> int:
         return 0

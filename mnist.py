@@ -40,14 +40,14 @@ def main():
     y_test = y_test[8:]
 
     model = dll.Model([
-        Flatten((28, 28), 28 * 28),
+        Flatten((28, 28)),
         Linear(28 * 28, 128, ReLU),
-        Linear(128, 10, None)
+        Linear(128, 10)
     ])
     model.print_summary()
 
     model.compile(CrossEntropyLoss, SGD, learning_rate=0.01)
-    model.train(x_train, y_train, batch_size=128, epochs=50, validation_split=0.1)
+    model.train(x_train, y_train, batch_size=128, epochs=2, validation_split=0.1)
 
     print()
     print(f"Accuracy: {model.test(x_test, y_test): .3%}")
