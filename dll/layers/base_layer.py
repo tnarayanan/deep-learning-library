@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 import numpy as np
 
 
@@ -11,15 +12,19 @@ class BaseLayer(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def get_input_shape(self) -> tuple:
+        raise NotImplementedError()
+
+    @abstractmethod
     def get_output_shape(self) -> tuple:
         raise NotImplementedError()
 
     @abstractmethod
-    def forward(self, x: np.ndarray, is_training: bool) -> np.ndarray:
+    def forward(self, x: np.ndarray, is_training: Optional[bool] = True) -> np.ndarray:
         raise NotImplementedError()
 
     @abstractmethod
-    def backward(self, curr_grad):
+    def backward(self, grad) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         raise NotImplementedError()
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
