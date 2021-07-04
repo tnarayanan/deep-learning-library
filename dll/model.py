@@ -40,6 +40,13 @@ class Model(BaseLayer):
         raise AssertionError("Cannot call function `backward` on a Model instance.")
 
     def compile(self, loss_function: Type[_LossFunction], optimizer_class: Type[BaseOptimizer], **optimizer_args):
+        # run empty data through model to check for layer dimension mismatches
+        try:
+            x = np.zeros((1,) + self.get_input_shape()[1:])
+            self(x)
+        except ValueError as e:
+            raise ValueError("Layer dimensions do not match") from e
+
         self.loss_function = loss_function
         self.optimizer = optimizer_class(self, **optimizer_args)
         self.has_been_compiled = True

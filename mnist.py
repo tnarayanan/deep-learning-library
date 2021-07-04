@@ -47,11 +47,10 @@ def main():
     model.print_summary()
 
     model.compile(CrossEntropyLoss, SGD, learning_rate=0.01)
-    model.train(x_train, y_train, batch_size=128, epochs=2, validation_split=0.1)
+    model.train(x_train, y_train, batch_size=128, epochs=50, validation_split=0.1)
 
     print()
     print(f"Accuracy: {model.test(x_test, y_test): .3%}")
-
 
 
 if __name__ == '__main__':
