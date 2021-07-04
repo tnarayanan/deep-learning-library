@@ -1,3 +1,4 @@
+from dll.data import DataLoader, _BaseDataset, random_split
 from dll.layers import BaseLayer
 
 from typing import Sequence, Optional, Type
@@ -41,76 +42,59 @@ class Model(BaseLayer):
 
     def compile(self, loss_function: Type[_LossFunction], optimizer_class: Type[BaseOptimizer], **optimizer_args):
         # run empty data through model to check for layer dimension mismatches
-        try:
-            x = np.zeros((1,) + self.get_input_shape()[1:])
-            self(x)
-        except ValueError as e:
-            raise ValueError("Layer dimensions do not match") from e
+        x = np.zeros((1,) + self.get_input_shape()[1:])
+        for i, layer in enumerate(self.layers):
+            try:
+                x = layer(x)
+            except ValueError as e:
+                raise ValueError(f"Layer {i + 1}'s input dimension {layer.get_input_shape()} does not match "
+                                 f"layer {i}'s output dimension {self.layers[i - 1].get_output_shape()}") from e
 
         self.loss_function = loss_function
         self.optimizer = optimizer_class(self, **optimizer_args)
         self.has_been_compiled = True
 
     def train(self,
-              x: np.ndarray,
-              y: np.ndarray,
+              train_dataset: _BaseDataset,
               batch_size: int,
               epochs: int,
-              validation_split: Optional[float] = 0.0,
+              val_split: Optional[float] = 0.0,
+              val_dataset: Optional[_BaseDataset] = None,
               shuffle: Optional[bool] = True) -> None:
 
         assert self.has_been_compiled, "Must compile model before training"
 
-        num_examples = x.shape[0]
-        indices = np.array(range(num_examples))
+        if val_split > 0 and val_dataset is None:
+            len_val_dataset = int(val_split * len(train_dataset))
+            train_dataset, val_dataset = random_split(train_dataset,
+                                                      [len(train_dataset) - len_val_dataset, len_val_dataset])
 
-        x_val, y_val = None, None
+        train_loader = DataLoader(train_dataset, batch_size, shuffle=shuffle)
 
-        if validation_split > 0:
-            num_val_examples = int(num_examples * validation_split)
-            np.random.shuffle(indices)
-            x_val = x[indices[:num_val_examples]]
-            y_val = y[indices[:num_val_examples]]
-
-            x = x[indices[num_val_examples:]]
-            y = y[indices[num_val_examples:]]
-
-            num_examples = x.shape[0]
-            indices = np.array(range(num_examples))
-
+        num_examples = len(train_dataset)
         num_batches = int(np.ceil(num_examples / batch_size))
 
         train_losses = []
         val_losses = []
         with tqdm(total=num_examples * epochs) as pbar:
             for epoch in range(epochs):
-                if shuffle:
-                    np.random.shuffle(indices)
-
                 total_loss = 0
 
-                for batch_idx in range(num_batches):
-                    low = batch_idx * batch_size
-                    high = min(num_examples, low + batch_size)
-                    batch_indices = indices[low:high]
-                    x_batch = x[batch_indices]
-                    y_batch = y[batch_indices]
-
+                for batch_idx, (x_batch, y_batch) in enumerate(train_loader):
                     y_pred = self(x_batch)
                     loss, grad = self.loss_function.compute_loss(y_pred, y_batch)
                     self.optimizer.step(grad)
 
                     total_loss += loss
-
-                    pbar.update(high - low)
+                    pbar.update(len(y_batch))
                     pbar.set_description(f'Epoch {epoch + 1}, loss {total_loss / (batch_idx + 1): .3f}', refresh=True)
 
                 train_losses.append(total_loss / num_batches)
 
-                if validation_split > 0:
+                if val_dataset is not None:
+                    x_val, y_val = val_dataset[:]
                     y_pred = self(x_val)
                     loss, _ = self.loss_function.compute_loss(y_pred, y_val)
-
                     val_losses.append(loss)
 
         plt.plot(train_losses, label='Train loss')
@@ -118,7 +102,8 @@ class Model(BaseLayer):
         plt.legend(loc='upper right')
         plt.show()
 
-    def test(self, x: np.ndarray, y: np.ndarray) -> float:
+    def test(self, test_dataset: _BaseDataset) -> float:
+        x, y = test_dataset[:]
         y_preds = self(x)
         if self.loss_function is CrossEntropyLoss:
             y_preds = np.argmax(y_preds, axis=-1)

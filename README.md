@@ -11,22 +11,24 @@ DLL to better understand the math behind deep learning, and because it was fun!
 ```python
 import dll
 from dll.layers import Linear, Flatten
+import dll.data as data
 import dll.optimizers as optimizers
 
-x_train, y_train, x_test, y_test = get_mnist_data()
+train_dataset = data.MNISTDataset(train=True)
+test_dataset = data.MNISTDataset(train=False)
 
 model = dll.Model([
-        Flatten((28, 28)),
-        Linear(28 * 28, 128, dll.ReLU),
-        Linear(128, 10)
+    Flatten((28, 28)),
+    Linear(28 * 28, 128, dll.ReLU),
+    Linear(128, 10)
 ])
 model.print_summary()
 
 model.compile(dll.CrossEntropyLoss, optimizers.SGD, learning_rate=0.01)
-model.train(x_train, y_train, batch_size=128, epochs=50, validation_split=0.1)
+model.train(train_dataset, batch_size=128, epochs=50, val_split=0.1)
 
-accuracy = model.test(x_test, y_test)
-print(f"Accuracy: {accuracy: .3%}")
+print()
+print(f"Accuracy: {model.test(test_dataset): .3%}")
 ```
 
 **Output**:
