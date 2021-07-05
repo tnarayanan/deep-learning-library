@@ -38,7 +38,7 @@ class MNISTDataset(Dataset):
 
             d.append(np.frombuffer(gzip.decompress(data), dtype=np.uint8).copy())
 
-        d[0] = d[0][16:].reshape((-1, 28, 28)) / 255
+        d[0] = d[0][16:].reshape((-1, 1, 28, 28)) / 255
         d[1] = d[1][8:]
 
         super().__init__(d[0], d[1])

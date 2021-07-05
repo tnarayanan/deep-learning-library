@@ -21,12 +21,6 @@ class Linear(BaseLayer):
     def get_num_params(self) -> int:
         return self.weights.size + self.bias.size
 
-    def get_input_shape(self) -> tuple:
-        return np.newaxis, self.input_units
-
-    def get_output_shape(self) -> tuple:
-        return np.newaxis, self.output_units  # np.newaxis represents the batch size
-
     def forward(self, x: np.ndarray, is_training: Optional[bool] = True) -> np.ndarray:
         z = np.dot(x, self.weights) + self.bias
 

@@ -15,14 +15,6 @@ class BaseLayer(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_input_shape(self) -> tuple:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def get_output_shape(self) -> tuple:
-        raise NotImplementedError()
-
-    @abstractmethod
     def forward(self, x: np.ndarray, is_training: Optional[bool] = True) -> np.ndarray:
         raise NotImplementedError()
 

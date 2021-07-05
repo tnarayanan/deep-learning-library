@@ -1,7 +1,7 @@
 from dll.data import DataLoader, _BaseDataset, random_split
 from dll.layers import BaseLayer
 
-from typing import Sequence, Optional, Type
+from typing import Sequence, Optional, Type, Tuple, List
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -16,6 +16,7 @@ class Model(BaseLayer):
         self.layers: Sequence[BaseLayer] = layers
 
         # attributes to be set in compile()
+        self.output_shapes: List[Tuple[int, ...]] = []
         self.optimizer: Optional[BaseOptimizer] = None
         self.loss_function: Optional[_LossFunction] = None
         self.has_been_compiled = False
@@ -26,12 +27,6 @@ class Model(BaseLayer):
             total_params += layer.get_num_params()
         return total_params
 
-    def get_input_shape(self) -> tuple:
-        return self.layers[0].get_input_shape()
-
-    def get_output_shape(self) -> tuple:
-        return self.layers[-1].get_output_shape()
-
     def forward(self, x: np.ndarray, is_training: Optional[bool] = True) -> np.ndarray:
         for layer in self.layers:
             x = layer(x)
@@ -40,15 +35,17 @@ class Model(BaseLayer):
     def backward(self, grad) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         raise AssertionError("Cannot call function `backward` on a Model instance.")
 
-    def compile(self, loss_function: Type[_LossFunction], optimizer_class: Type[BaseOptimizer], **optimizer_args):
+    def compile(self, input_shape: Tuple[int, ...], loss_function: Type[_LossFunction], optimizer_class: Type[BaseOptimizer], **optimizer_args):
         # run empty data through model to check for layer dimension mismatches
-        x = np.zeros((1,) + self.get_input_shape()[1:])
+        self.output_shapes.clear()
+        self.output_shapes.append(input_shape)
+        x = np.zeros((1,) + input_shape)
         for i, layer in enumerate(self.layers):
             try:
                 x = layer(x)
+                self.output_shapes.append(x.shape[1:])
             except ValueError as e:
-                raise ValueError(f"Layer {i + 1}'s input dimension {layer.get_input_shape()} does not match "
-                                 f"layer {i}'s output dimension {self.layers[i - 1].get_output_shape()}") from e
+                raise ValueError(f"Layer dimensions do not match") from e
 
         self.loss_function = loss_function
         self.optimizer = optimizer_class(self, **optimizer_args)
@@ -113,29 +110,31 @@ class Model(BaseLayer):
             raise NotImplementedError()
 
     def print_summary(self) -> None:
+        assert self.has_been_compiled, "Must compile model before printing summary"
+
         left_space_len = 2
         layer_padding = 12
-        output_shape_padding = 15
+        output_shape_padding = 20
         params_padding = 8
         right_space_len = 2
 
         left_space = " " * left_space_len
         right_space = " " * right_space_len
 
-        def print_line(layer: str, shape: str, params: str):
+        def print_line(layer_str: str, shape: str, params: str):
             print(
-                f'{left_space}{layer: >{layer_padding - 3}}   {shape: <{output_shape_padding - 2}}  {params: >{params_padding}}{right_space}')
+                f'{left_space}{layer_str: >{layer_padding - 3}}   {shape: <{output_shape_padding - 2}}  {params: >{params_padding}}{right_space}')
 
         thick_line = "=" * (left_space_len + layer_padding + output_shape_padding + params_padding + right_space_len)
         thin_line = "—" * (left_space_len + layer_padding + output_shape_padding + params_padding + right_space_len)
 
-        print_line("Layer", "Output Shape", "# Params")
+        print_line("Layer", "Output Shape", "Num Params")
         print(thick_line)
-        print_line("Input", repr(self.layers[0].get_input_shape()), "")
+        print_line("Input", repr((np.newaxis,) + self.output_shapes[0]), "")
 
-        for layer in self.layers:
+        for i, layer in enumerate(self.layers):
             print(thin_line)
-            print_line(layer.get_name(), repr(layer.get_output_shape()), str(layer.get_num_params()))
+            print_line(layer.get_name(), repr((np.newaxis,) + self.output_shapes[i + 1]), str(layer.get_num_params()))
 
         print(thick_line)
         print(f'{left_space}Total params: {self.get_num_params()}')
