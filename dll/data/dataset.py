@@ -1,7 +1,7 @@
+from abc import ABC, abstractmethod
 from typing import Sequence, List
 
 import numpy as np
-from abc import ABC, abstractmethod
 
 
 class _BaseDataset(ABC):

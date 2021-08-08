@@ -1,5 +1,6 @@
 import numpy as np
-from dll.layers import Conv2d, MaxPool2d, Linear
+
+from dll.layers import Conv2d, MaxPool2d
 
 x = np.random.randn(3, 1, 6, 6)
 

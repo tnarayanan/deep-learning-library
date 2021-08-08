@@ -1,8 +1,9 @@
 from typing import Optional, Type
 
+import numpy as np
+
 from dll.activations import _Activation
 from dll.layers import BaseLayer
-import numpy as np
 
 
 class Linear(BaseLayer):

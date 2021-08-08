@@ -1,8 +1,8 @@
-from typing import Optional, Type, Tuple
+from typing import Optional
 
-from dll.activations import _Activation
-from dll.layers import BaseLayer
 import numpy as np
+
+from dll.layers import BaseLayer
 
 
 class MaxPool2d(BaseLayer):
@@ -61,7 +61,7 @@ class MaxPool2d(BaseLayer):
                 max_arr = np.max(x_slice, axis=(1, 2))[:, np.newaxis, np.newaxis, :]
                 mask = x_slice == max_arr
 
-                da_prev[:, h_start:h_end, w_start:w_end, :] = mask * grad[:, h:h+1, w:w+1, :]
+                da_prev[:, h_start:h_end, w_start:w_end, :] = mask * grad[:, h:h + 1, w:w + 1, :]
 
         # transpose to (examples, channels, height, width)
         return da_prev.transpose((0, 3, 1, 2)), np.array([]), np.array([])

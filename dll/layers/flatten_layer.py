@@ -1,7 +1,8 @@
 from typing import Optional
 
-from dll.layers import BaseLayer
 import numpy as np
+
+from dll.layers import BaseLayer
 
 
 class Flatten(BaseLayer):

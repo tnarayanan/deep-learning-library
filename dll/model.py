@@ -1,11 +1,11 @@
-from dll.data import DataLoader, _BaseDataset, random_split
-from dll.layers import BaseLayer
-
 from typing import Sequence, Optional, Type, Tuple, List
+
+import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 
+from dll.data import DataLoader, _BaseDataset, random_split
+from dll.layers import BaseLayer
 from dll.loss_functions import _LossFunction, CrossEntropyLoss
 from dll.optimizers import BaseOptimizer
 
@@ -35,7 +35,8 @@ class Model(BaseLayer):
     def backward(self, grad) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         raise AssertionError("Cannot call function `backward` on a Model instance.")
 
-    def compile(self, input_shape: Tuple[int, ...], loss_function: Type[_LossFunction], optimizer_class: Type[BaseOptimizer], **optimizer_args):
+    def compile(self, input_shape: Tuple[int, ...], loss_function: Type[_LossFunction],
+                optimizer_class: Type[BaseOptimizer], **optimizer_args):
         # run empty data through model to check for layer dimension mismatches
         self.output_shapes.clear()
         self.output_shapes.append(input_shape)

@@ -1,8 +1,9 @@
-from typing import Optional, Type, Tuple
+from typing import Optional, Type
+
+import numpy as np
 
 from dll.activations import _Activation
 from dll.layers import BaseLayer
-import numpy as np
 
 
 class Conv2d(BaseLayer):
@@ -93,10 +94,10 @@ class Conv2d(BaseLayer):
                 h_end, w_end = h_start + self.kernel_size, w_start + self.kernel_size
 
                 da_prev[:, h_start:h_end, w_start:w_end, :] += np.sum(self.weights[np.newaxis, :, :, :, :] *
-                                                                     grad[:, h:h+1, w:w+1, np.newaxis, :], axis=4)
+                                                                      grad[:, h:h + 1, w:w + 1, np.newaxis, :], axis=4)
 
                 dw += np.sum(x[:, h_start:h_end, w_start:w_end, :, np.newaxis] *
-                             grad[:, h:h+1, w:w+1, np.newaxis, :], axis=0)
+                             grad[:, h:h + 1, w:w + 1, np.newaxis, :], axis=0)
 
         dw /= m
         da_prev = da_prev[:, self.padding:self.padding + h_in, self.padding:self.padding + w_in, :]

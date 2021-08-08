@@ -16,7 +16,7 @@ class BCELoss(_LossFunction):
     def compute_loss(a: np.ndarray, y: np.ndarray) -> Tuple[float, np.ndarray]:
         loss = -np.sum(y * np.log(a) + (1 - y) * np.log(1 - a)) / y.shape[0]
         grad = -(np.divide(y, a) - np.divide(1 - y, 1 - a))
-        return np.squeeze(loss), grad
+        return np.squeeze(loss)[()], grad
 
 
 class MSELoss(_LossFunction):
@@ -24,7 +24,7 @@ class MSELoss(_LossFunction):
     def compute_loss(y_pred: np.ndarray, y: np.ndarray) -> Tuple[float, np.ndarray]:
         loss = np.mean(np.power(y - y_pred, 2))
         grad = 2 * (y_pred - y) / y.shape[0]
-        return np.squeeze(loss), grad
+        return np.squeeze(loss)[()], grad
 
 
 class CrossEntropyLoss(_LossFunction):
@@ -42,4 +42,4 @@ class CrossEntropyLoss(_LossFunction):
         loss = np.sum(log_likelihood) / m
         grad = sm_output
         grad[range(m), y] -= 1
-        return np.squeeze(loss), grad / m
+        return np.squeeze(loss)[()], grad / m
