@@ -6,6 +6,17 @@ from dll.data import _BaseDataset
 
 
 class DataLoader(object):
+    """A class used to load data into a model.
+
+    DataLoader splits a dataset into batches of data, which can be fed into a model. Each iteration of the dataset,
+    DataLoader can optionally shuffle the dataset to change which examples make up a batch.
+
+    Args:
+        dataset: The dataset that will be split into batches
+        batch_size: An integer representing the size of each batch of data
+        shuffle: A boolean indicating whether or not to shuffle the dataset before splitting it into batches
+    """
+
     def __init__(self, dataset: _BaseDataset, batch_size: int, shuffle: Optional[bool] = True):
         self.dataset: _BaseDataset = dataset
         self.num_examples: int = len(self.dataset)

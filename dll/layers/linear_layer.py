@@ -7,6 +7,14 @@ from dll.layers import BaseLayer
 
 
 class Linear(BaseLayer):
+    """A linear (fully-connected) layer.
+
+    Args:
+        input_units: The number of inputs to the layer.
+        output_units: The number of outputs of the layer.
+        activation: Optional; the activation function of the layer.
+    """
+
     def __init__(self, input_units: int, output_units: int, activation: Optional[Type[_Activation]] = None):
         super().__init__()
         self.input_units: int = input_units

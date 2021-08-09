@@ -9,6 +9,16 @@ from dll.data import Dataset
 
 
 class MNISTDataset(Dataset):
+    """The MNIST dataset of handwritten digits.
+
+    Args:
+        train: A boolean representing whether to load train data (True) or test data (False).
+        save_path: A string representing the folder location of the MNIST data.
+        download: A boolean representing whether to download the data to the save_path.
+
+    Raises:
+        RuntimeError: The MNIST data was not found in the save_path.
+    """
     train_sources: Tuple[str, str] = [
         ('train_images.gz', 'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz'),
         ('train_labels.gz', 'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz')]

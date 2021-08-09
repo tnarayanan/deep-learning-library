@@ -11,6 +11,14 @@ from dll.optimizers import BaseOptimizer
 
 
 class Model(BaseLayer):
+    """A container for multiple neural network layers.
+
+    The Model class provides a convenient way to train and evaluate neural networks.
+
+    Args:
+        layers: A sequence of individual layers that form the model.
+    """
+
     def __init__(self, layers: Sequence[BaseLayer]):
         super().__init__()
         self.layers: Sequence[BaseLayer] = layers
@@ -28,6 +36,15 @@ class Model(BaseLayer):
         return total_params
 
     def forward(self, x: np.ndarray, is_training: Optional[bool] = True) -> np.ndarray:
+        """Executes a forward-pass of the model with the given input.
+
+        Args:
+            x: A Numpy array representing the input to the model.
+            is_training: A boolean representing whether the forward pass occurs during model training or evaluation.
+
+        Returns:
+            The output of the forward-pass of the model.
+        """
         for layer in self.layers:
             x = layer(x)
         return x
@@ -37,6 +54,17 @@ class Model(BaseLayer):
 
     def compile(self, input_shape: Tuple[int, ...], loss_function: Type[_LossFunction],
                 optimizer_class: Type[BaseOptimizer], **optimizer_args):
+        """Compiles the model to prepare for training.
+
+        Args:
+            input_shape: The shape of the input to the model.
+            loss_function: The loss function to be used after the forward pass of the model.
+            optimizer_class: The optimizer class to be used to optimize the model.
+            optimizer_args: Keyword arguments to be passed into the optimizer's constructor.
+
+        Raises:
+            ValueError: The layer input/output dimensions do not match.
+        """
         # run empty data through model to check for layer dimension mismatches
         self.output_shapes.clear()
         self.output_shapes.append(input_shape)
@@ -59,7 +87,17 @@ class Model(BaseLayer):
               val_split: Optional[float] = 0.0,
               val_dataset: Optional[_BaseDataset] = None,
               shuffle: Optional[bool] = True) -> None:
+        """Train the model on a dataset.
 
+        Args:
+            train_dataset: The dataset used to train the model.
+            batch_size: The size of each batch during training.
+            epochs: The number of epochs to train the model for.
+            val_split: Optional; how much of the train dataset to use for validation. This value is
+              ignored if `val_dataset` is specified.
+            val_dataset: Optional; the dataset used for validating the model during training.
+            shuffle: Optional; a boolean representing whether to shuffle the batches of data every epoch.
+        """
         assert self.has_been_compiled, "Must compile model before training"
 
         if val_split > 0 and val_dataset is None:
@@ -101,16 +139,36 @@ class Model(BaseLayer):
         plt.show()
 
     def test(self, test_dataset: _BaseDataset) -> float:
+        """Train the model on a dataset.
+
+        Args:
+            train_dataset: The dataset used to train the model.
+            batch_size: The size of each batch during training.
+            epochs: The number of epochs to train the model for.
+            val_split: Optional; how much of the train dataset to use for validation. This value is
+              ignored if `val_dataset` is specified.
+            val_dataset: Optional; the dataset used for validating the model during training.
+            shuffle: Optional; a boolean representing whether to shuffle the batches of data every epoch.
+        """
         x, y = test_dataset[:]
         y_preds = self(x)
         if self.loss_function is CrossEntropyLoss:
             y_preds = np.argmax(y_preds, axis=-1)
             accuracy = np.mean(y_preds == y)
-            return accuracy
+            return accuracy[()]
         else:
             raise NotImplementedError()
 
     def print_summary(self) -> None:
+        """Prints a summary of the model.
+
+        The summary includes details about each layer:
+          * Layer type
+          * Output shape
+          * Number of parameters
+
+        The summary also includes the total number of parameters in the model.
+        """
         assert self.has_been_compiled, "Must compile model before printing summary"
 
         left_space_len = 2

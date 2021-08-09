@@ -4,18 +4,41 @@ import numpy as np
 
 
 class _Activation(ABC):
+    """A base class for an activation function.
+
+    An abstract class containing the methods that activation functions must implement.
+    """
     @staticmethod
     @abstractmethod
     def compute(x: np.ndarray) -> np.ndarray:
+        """Computes the activation function for the given input.
+
+        Args:
+            x: A Numpy array representing the input to the activation function.
+
+        Returns:
+            The output of the activation function.
+        """
         raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
     def backward(da: np.ndarray, z: np.ndarray) -> np.ndarray:
+        """Computes the gradient of the activation function.
+
+        Args:
+            da: The activation gradient of the next layer in the model
+            z: The cached outputs of the current layer before the activation function was applied.
+
+        Returns:
+            The gradient of the activation function.
+        """
         raise NotImplementedError()
 
 
 class Sigmoid(_Activation):
+    """The sigmoid activation function.
+    """
     @staticmethod
     def compute(x: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-x))
@@ -27,6 +50,8 @@ class Sigmoid(_Activation):
 
 
 class ReLU(_Activation):
+    """The ReLU activation function.
+    """
     @staticmethod
     def compute(x: np.ndarray) -> np.ndarray:
         return np.maximum(0, x)
@@ -38,6 +63,8 @@ class ReLU(_Activation):
 
 
 class Tanh(_Activation):
+    """The Tanh activation function.
+    """
     @staticmethod
     def compute(x: np.ndarray) -> np.ndarray:
         return np.tanh(x)

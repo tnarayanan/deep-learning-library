@@ -6,6 +6,13 @@ from dll.layers import BaseLayer
 
 
 class MaxPool2d(BaseLayer):
+    """A 2D max-pooling layer.
+
+    Args:
+        kernel_size: The kernel size of the filter.
+        stride: Optional; the stride of the filter.
+    """
+
     def __init__(self,
                  kernel_size: int,
                  stride: Optional[int] = None):

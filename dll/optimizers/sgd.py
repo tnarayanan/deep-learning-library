@@ -1,10 +1,18 @@
 import numpy as np
 
+from dll import Model
 from dll.optimizers import BaseOptimizer
 
 
 class SGD(BaseOptimizer):
-    def __init__(self, model, learning_rate):
+    """A stochastic gradient descent (SGD) optimizer.
+
+    Args:
+        model: The model to be optimized.
+        learning_rate: A float representing the learning rate of the optimizer.
+    """
+
+    def __init__(self, model: Model, learning_rate: float):
         super().__init__(model)
         self.learning_rate = learning_rate
 

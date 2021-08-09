@@ -7,6 +7,19 @@ from dll.layers import BaseLayer
 
 
 class Conv2d(BaseLayer):
+    """A 2D convolutional layer.
+
+    Args:
+        input_channels: The number of input channels to the layer.
+        output_channels: The number of output channels of the layer.
+        kernel_size: The kernel size of the filter.
+        stride: Optional; the stride of the filter.
+        padding: Optional; an integer representing the amount of padding to apply.
+        padding_mode: Optional; a string representing the type of padding to apply.
+          Only acceptable value is 'zeros'.
+        activation: Optional; the activation function of the layer.
+    """
+
     def __init__(self,
                  input_channels: int,
                  output_channels: int,

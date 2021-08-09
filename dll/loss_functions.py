@@ -5,13 +5,32 @@ import numpy as np
 
 
 class _LossFunction(ABC):
+    """A base class for a loss function.
+
+    An abstract class containing the `compute_loss` function that loss functions must implement.
+    """
+
     @staticmethod
     @abstractmethod
     def compute_loss(y_pred: np.ndarray, y: np.ndarray) -> Tuple[float, np.ndarray]:
+        """Computes the loss of the outputs of a model.
+
+        Args:
+            y_pred: A Numpy array representing the outputs of a model.
+            y: A Numpy array representing the labels of the examples fed through the model.
+
+        Returns:
+            A tuple of the loss value and the gradient of the loss function.
+        """
         raise NotImplementedError()
 
 
 class BCELoss(_LossFunction):
+    """The binary cross-entropy (BCE) loss function.
+
+    Inputs to BCELoss should be logits; no activation function should be applied.
+    """
+
     @staticmethod
     def compute_loss(a: np.ndarray, y: np.ndarray) -> Tuple[float, np.ndarray]:
         loss = -np.sum(y * np.log(a) + (1 - y) * np.log(1 - a)) / y.shape[0]
@@ -20,6 +39,9 @@ class BCELoss(_LossFunction):
 
 
 class MSELoss(_LossFunction):
+    """The binary cross-entropy (BCE) loss function.
+    """
+
     @staticmethod
     def compute_loss(y_pred: np.ndarray, y: np.ndarray) -> Tuple[float, np.ndarray]:
         loss = np.mean(np.power(y - y_pred, 2))
@@ -28,6 +50,11 @@ class MSELoss(_LossFunction):
 
 
 class CrossEntropyLoss(_LossFunction):
+    """The cross-entropy loss function.
+
+    Inputs to CrossEntropyLoss should be logits; no activation function should be applied.
+    """
+
     @staticmethod
     def _softmax(x: np.ndarray) -> np.ndarray:
         exps = np.exp(x - np.max(x, axis=-1, keepdims=True))
