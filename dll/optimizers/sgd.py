@@ -1,6 +1,5 @@
 import numpy as np
 
-from dll import Model
 from dll.optimizers import BaseOptimizer
 
 
@@ -12,7 +11,7 @@ class SGD(BaseOptimizer):
         learning_rate: A float representing the learning rate of the optimizer.
     """
 
-    def __init__(self, model: Model, learning_rate: float):
+    def __init__(self, model, learning_rate: float):
         super().__init__(model)
         self.learning_rate = learning_rate
 

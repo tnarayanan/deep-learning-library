@@ -86,7 +86,7 @@ class Model(BaseLayer):
               epochs: int,
               val_split: float = 0.0,
               val_dataset: Optional[_BaseDataset] = None,
-              shuffle: Optional[bool] = True) -> None:
+              shuffle: bool = True) -> None:
         """Train the model on a dataset.
 
         Args:

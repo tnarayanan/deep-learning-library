@@ -1,6 +1,6 @@
 import gzip
 import os
-from typing import Tuple
+from typing import Sequence, Tuple
 
 import numpy as np
 import requests
@@ -19,10 +19,10 @@ class MNISTDataset(Dataset):
     Raises:
         RuntimeError: The MNIST data was not found in the save_path.
     """
-    train_sources: Tuple[str, str] = [
+    train_sources: Sequence[Tuple[str, str]] = [
         ('train_images.gz', 'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz'),
         ('train_labels.gz', 'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz')]
-    test_sources: Tuple[str, str] = [
+    test_sources: Sequence[Tuple[str, str]] = [
         ('test_images.gz', 'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz'),
         ('test_labels.gz', 'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz')]
 

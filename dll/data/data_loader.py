@@ -17,7 +17,7 @@ class DataLoader(object):
         shuffle: A boolean indicating whether or not to shuffle the dataset before splitting it into batches
     """
 
-    def __init__(self, dataset: _BaseDataset, batch_size: int, shuffle: Optional[bool] = True):
+    def __init__(self, dataset: _BaseDataset, batch_size: int, shuffle: bool = True):
         self.dataset: _BaseDataset = dataset
         self.num_examples: int = len(self.dataset)
 
