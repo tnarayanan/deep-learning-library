@@ -13,8 +13,11 @@ class BaseLayer(ABC):
         optimize: A boolean representing whether to optimize the layer's parameters.
     """
 
-    def __init__(self, optimize: Optional[bool] = True):
+    def __init__(self, optimize: bool = True):
         self.optimize = optimize
+        if self.optimize:
+            self.weights: np.ndarray = np.array([])
+            self.bias: np.ndarray = np.array([])
 
     def get_name(self) -> str:
         return self.__class__.__name__

@@ -19,7 +19,7 @@ class Linear(BaseLayer):
         super().__init__()
         self.input_units: int = input_units
         self.output_units: int = output_units
-        self.activation: Type[_Activation] = activation
+        self.activation: Optional[Type[_Activation]] = activation
 
         self.weights: np.ndarray = np.random.randn(self.input_units, self.output_units) * 0.01
         self.bias: np.ndarray = np.zeros((self.output_units,))
@@ -51,6 +51,7 @@ class Linear(BaseLayer):
 
         dw = np.dot(x.T, dz)
         db = np.sum(dz, axis=0, keepdims=True).squeeze()
+        assert(isinstance(db, np.ndarray))
         da_prev = np.dot(dz, self.weights.T)
 
         return da_prev, dw, db

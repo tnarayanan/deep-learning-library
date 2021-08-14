@@ -24,9 +24,9 @@ class Conv2d(BaseLayer):
                  input_channels: int,
                  output_channels: int,
                  kernel_size: int,
-                 stride: Optional[int] = 1,
-                 padding: Optional[int] = 0,
-                 padding_mode: Optional[str] = 'zeros',
+                 stride: int = 1,
+                 padding: int = 0,
+                 padding_mode: str = 'zeros',
                  activation: Optional[Type[_Activation]] = None):
         super().__init__()
         self.input_channels: int = input_channels
@@ -35,7 +35,7 @@ class Conv2d(BaseLayer):
         self.stride: int = stride
         self.padding: int = padding
         self.padding_mode: str = padding_mode
-        self.activation: Type[_Activation] = activation
+        self.activation: Optional[Type[_Activation]] = activation
 
         self.weights: np.ndarray = np.random.randn(self.kernel_size, self.kernel_size, self.input_channels,
                                                    self.output_channels) * 0.1
@@ -100,6 +100,7 @@ class Conv2d(BaseLayer):
         da_prev = np.zeros_like(self.input_cache)
         dw = np.zeros_like(self.weights)
         db = np.sum(grad, axis=(0, 1, 2))
+        assert(isinstance(db, np.ndarray))
 
         for h in range(n_h):
             for w in range(n_w):
@@ -117,3 +118,4 @@ class Conv2d(BaseLayer):
 
         # transpose to (examples, channels, height, width)
         return da_prev.transpose((0, 3, 1, 2)), dw, db
+

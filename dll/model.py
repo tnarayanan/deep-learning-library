@@ -26,7 +26,7 @@ class Model(BaseLayer):
         # attributes to be set in compile()
         self.output_shapes: List[Tuple[int, ...]] = []
         self.optimizer: Optional[BaseOptimizer] = None
-        self.loss_function: Optional[_LossFunction] = None
+        self.loss_function: Optional[Type[_LossFunction]] = None
         self.has_been_compiled = False
 
     def get_num_params(self) -> int:
@@ -84,7 +84,7 @@ class Model(BaseLayer):
               train_dataset: _BaseDataset,
               batch_size: int,
               epochs: int,
-              val_split: Optional[float] = 0.0,
+              val_split: float = 0.0,
               val_dataset: Optional[_BaseDataset] = None,
               shuffle: Optional[bool] = True) -> None:
         """Train the model on a dataset.
@@ -99,6 +99,8 @@ class Model(BaseLayer):
             shuffle: Optional; a boolean representing whether to shuffle the batches of data every epoch.
         """
         assert self.has_been_compiled, "Must compile model before training"
+        assert self.loss_function is not None
+        assert self.optimizer is not None
 
         if val_split > 0 and val_dataset is None:
             len_val_dataset = int(val_split * len(train_dataset))
