@@ -24,7 +24,7 @@ def main():
 
     model.compile((1, 28, 28), dll.CrossEntropyLoss, optimizers.SGD, learning_rate=0.01)
     model.print_summary()
-    model.train(train_dataset, batch_size=32, epochs=5, val_split=0.1)
+    model.train(train_dataset, batch_size=32, epochs=50, val_split=0.1)
 
     print()
     print(f"Accuracy: {model.test(test_dataset): .3%}")
